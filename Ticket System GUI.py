@@ -7,6 +7,7 @@ class Ticket:
         self._capacity = capacity
         self._cost = cost
         self._availability = capacity
+        self._purchases = 0
 
         ticket.append(self)
         ticketNames.append(self._time)
@@ -28,7 +29,7 @@ Ticket("8PM", 250, 12)
 
 #Default Variables
 ticketType = StringVar()
-ticketType.set("TIME")
+ticketType.set("TICKETS")
 numberTickets = IntVar()
 soldTickets = 0
 earnings = 0
@@ -36,7 +37,13 @@ earnings = 0
 #For adding new tickets
 newName = StringVar()
 newPrice = DoubleVar()
+newPrice.set(0)
 newCapacity = IntVar()
+
+#For deleting tickets
+
+toDelete = StringVar()
+toDelete.set("TICKETS")
 
 def create1():
     #Display Prices
@@ -54,13 +61,15 @@ def create1():
         
     return frame1
 
+#Purchase Area
 def create2():
     #Purchase Frame
     
     frame2 = Frame(root, relief = "groove", borderwidth = 2, width = 50)
     frame2.grid(row=0, column = 1, sticky = N+S+W+E)
     Label(frame2, text = "PURCHASE TICKETS").grid(row=0,column=0)
-    OptionMenu(frame2, ticketType, *ticketNames).grid(row=1,column=0)
+    Label(frame2, text ="TICKET: ").grid(row=1,column=0)
+    OptionMenu(frame2, ticketType, *ticketNames).grid(row=1,column=1)
     
     Label(frame2, text = "NUMBER OF TICKETS: ").grid(row=2,column=0)
     Entry(frame2, textvariable = numberTickets).grid(row=2,column=1)
@@ -69,6 +78,7 @@ def create2():
 
     return frame2
 
+#Function that runs upon clicking the button in Frame2. 
 def sell():
     global frame1
     global frame2
@@ -79,14 +89,16 @@ def sell():
 
     global soldTickets
     global earnings
+    
     try:
         for i in ticket:
             if i._time == ticketType.get():
                 if (i._availability - numberTickets.get()) >= 0:
                     if numberTickets.get() <= 0:
-                        messagebox.showinfo("Warning", "Please enter an intger greater than 0")
+                        messagebox.showinfo("Warning", "Please enter an integer greater than 0")
                     else:
                         i._availability -= numberTickets.get()
+                        i._purchases += numberTickets.get()
                         soldTickets += numberTickets.get()
                         earnings += (i._cost * numberTickets.get())
                 else:
@@ -104,6 +116,7 @@ def sell():
     except:
         messagebox.showinfo("Warning", "Please enter a valid integer")
 
+#Summary
 def create3():
     frame3 = Frame(root, relief = "groove", borderwidth = 2, width = 50)
     frame3.grid(row=1, column=0, sticky = N+E+W+S)
@@ -114,9 +127,10 @@ def create3():
 
     return frame3
 
+#Reset Button
 def create4():
     frame4 = Frame(root, relief = "groove", borderwidth = 2, width = 50)
-    frame4.grid(row=1,column=1,sticky=N+W+E+S)
+    frame4.grid(row=2,column=1,sticky=N+W+E+S)
 
     Button(frame4, text = "RESET SHOWS", command = reset).grid(row=0,column=0)
     return frame4
@@ -125,6 +139,7 @@ def reset():
     global frame1
     global frame2
     global frame3
+    global frame6
 
     global earnings
     global soldTickets
@@ -134,14 +149,16 @@ def reset():
     global newName
     global newCapacity
     global newPrice
+    global toDelete
 
     earnings = 0
     soldTickets = 0
-    ticketType.set("TIME")
+    ticketType.set("TICKETS")
     numberTickets.set(0)
     newName.set("")
     newCapacity.set(0)
     newPrice.set(0)
+    toDelete.set("TICKETS")
 
     for i in ticket:
         i._restore()
@@ -155,6 +172,10 @@ def reset():
     frame3.destroy()
     frame3 = create3()
 
+    frame6.destroy()
+    frame6 = create6()
+
+#Adding new Tickets
 def create5():
     frame5 = Frame(root, relief = "groove", borderwidth =2, width = 50)
     frame5.grid(row=2, column=0, sticky = N+S+W+E)
@@ -169,6 +190,7 @@ def create5():
     Button(frame5, text = "ADD TICKETS", command = addTicket).grid(row=4,column=0)
     return frame5
 
+#Function that adds the tickets
 def addTicket():
     global newName
     global newCapacity
@@ -177,34 +199,101 @@ def addTicket():
     global frame1
     global frame2
     global frame3
+    global frame6
+    try:
+        duplicate = "NO"
+        for i in ticket:
+            if i._time == newName.get().upper():
+                duplicate = "YES"
+                break
+        if duplicate == "NO":
+            if newName.get().strip() != "":
+                if newCapacity.get() > 0:
+                    if newPrice.get() > 0:
+                        Ticket(newName.get().upper(), newCapacity.get(), newPrice.get())
+                        
+                        frame1.destroy()
+                        frame1 = create1()
 
+                        frame2.destroy()
+                        frame2 = create2()
+
+                        frame3.destroy()
+                        frame3 = create3()
+
+                        frame6.destroy()
+                        frame6 = create6()
+                    else:
+                        messagebox.showinfo("Warning", "Price must be greater than 0")
+                else:
+                    messagebox.showinfo("Warning", "Capacity must be greater than 0")
+            else:
+                messagebox.showinfo("Warning", "Ticket Name cannot be empty")
+        else:
+            messagebox.showinfo("Warning", "Ticket already exists")
+    except:
+        messagebox.showinfo("Warning", "Please enter valid inputs for Capacity and Price")
+
+def create6():
+    frame6 = Frame(root, relief = "groove", borderwidth = 2, width = 50)
+    frame6.grid(row=1,column=1,sticky=N+S+W+E)
+
+    Label(frame6, text= "DELETE TICKETS").grid(row=0,columnspan=2)
+    Label(frame6, text = "TICKET: ").grid(row=2,column=0)
+    OptionMenu(frame6, toDelete, *ticketNames).grid(row=2,column=1)
+    Button(frame6, text = "DELETE", command = delete).grid(row=3,column=0)
+    return frame6
+
+def delete():
+    global toDelete
+    global frame1
+    global frame2
+    global frame3
+    global frame6
+
+    global soldTickets
+    global earnings
+    
     duplicate = "NO"
     for i in ticket:
-        if i._time == newName.get().upper():
+        if i._time == toDelete.get():
             duplicate = "YES"
             break
-    if duplicate == "NO":
-        Ticket(newName.get().upper(), newCapacity.get(), newPrice.get())
+    if duplicate == "YES":
+        if len(ticket) > 1:
+            if messagebox.askyesno("Warning", "Are you sure you want to delete this? All sales will be removed. "):
+                for i in ticket:
+                    if i._time == toDelete.get():
+                        soldTickets -= i._purchases
+                        earnings -= i._purchases*i._cost
+                        ticket.remove(i)
+                        ticketNames.remove(i._time)
+                        toDelete.set("TICKETS")
+                        break
+                messagebox.showinfo("Success", "Ticket has been deleted")
+                frame1.destroy
+                frame1 = create1()
+
+                frame2.destroy()
+                frame2 = create2()
+
+                frame3.destroy()
+                frame3 = create3()
+
+                frame6.destroy()
+                frame6 = create6()
+        else:
+            messagebox.showinfo("Warning", "Cannot have no tickets available")
+            
         
-        frame1.destroy()
-        frame1 = create1()
-
-        frame2.destroy()
-        frame2 = create2()
-
-        frame3.destroy()
-        frame3 = create3()
-    else:
-        messagebox.showinfo("Warning", "Ticket already exists")
-
     
-
 
 frame1 = create1()
 frame2 = create2()
 frame3 = create3()
 frame4 = create4()
 frame5 = create5()
+frame6 = create6()
 
 root.mainloop()
         
