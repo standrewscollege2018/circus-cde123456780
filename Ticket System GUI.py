@@ -21,6 +21,7 @@ ticketNames = []
 
 root = Tk()
 root.title("Ticket Ordering System")
+root.resizable(False, False)
 
 #Default Tickets
 Ticket("10AM", 150, 5)
@@ -95,14 +96,14 @@ def sell():
             if i._time == ticketType.get():
                 if (i._availability - numberTickets.get()) >= 0:
                     if numberTickets.get() <= 0:
-                        messagebox.showinfo("Warning", "Please enter an integer greater than 0")
+                        messagebox.showwarning("Warning", "Please enter an integer greater than 0")
                     else:
                         i._availability -= numberTickets.get()
                         i._purchases += numberTickets.get()
                         soldTickets += numberTickets.get()
                         earnings += (i._cost * numberTickets.get())
                 else:
-                    messagebox.showinfo("Warning", "Not enough Tickets")
+                    messagebox.showwarning("Warning", "Not enough Tickets")
 
         
         frame1.destroy()
@@ -114,7 +115,7 @@ def sell():
         frame3.destroy()
         frame3 = create3()
     except:
-        messagebox.showinfo("Warning", "Please enter a valid integer")
+        messagebox.showwarning("Warning", "Please enter a valid integer")
 
 #Summary
 def create3():
@@ -123,7 +124,7 @@ def create3():
 
     Label(frame3, text = "SUMMARY").grid(row=0,column=0)
     Label(frame3, text = "{} tickets sold today".format(soldTickets)).grid(row=2,column=0)
-    Label(frame3, text = "${} earned today".format(earnings)).grid(row=3,column=0)
+    Label(frame3, text = "${:.2f} earned today".format(earnings)).grid(row=3,column=0)
 
     return frame3
 
@@ -132,7 +133,7 @@ def create4():
     frame4 = Frame(root, relief = "groove", borderwidth = 2, width = 50)
     frame4.grid(row=2,column=1,sticky=N+W+E+S)
 
-    Button(frame4, text = "RESET SHOWS", command = reset).grid(row=0,column=0)
+    Button(frame4, text = "RESET SHOWS", command = reset).grid(row=0,column=0, padx = 100)
     return frame4
     
 def reset():
@@ -224,15 +225,15 @@ def addTicket():
                         frame6.destroy()
                         frame6 = create6()
                     else:
-                        messagebox.showinfo("Warning", "Price must be greater than 0")
+                        messagebox.showwarning("Warning", "Price must be greater than 0")
                 else:
-                    messagebox.showinfo("Warning", "Capacity must be greater than 0")
+                    messagebox.showwarning("Warning", "Capacity must be greater than 0")
             else:
-                messagebox.showinfo("Warning", "Ticket Name cannot be empty")
+                messagebox.showwarning("Warning", "Ticket Name cannot be empty")
         else:
-            messagebox.showinfo("Warning", "Ticket already exists")
+            messagebox.showwarning("Warning", "Ticket already exists")
     except:
-        messagebox.showinfo("Warning", "Please enter valid inputs for Capacity and Price")
+        messagebox.showwarning("Warning", "Please enter valid inputs for Capacity and Price")
 
 def create6():
     frame6 = Frame(root, relief = "groove", borderwidth = 2, width = 50)
@@ -283,7 +284,7 @@ def delete():
                 frame6.destroy()
                 frame6 = create6()
         else:
-            messagebox.showinfo("Warning", "Cannot have no tickets available")
+            messagebox.showwarning("Warning", "Cannot have no tickets available")
             
         
     
