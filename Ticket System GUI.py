@@ -1,4 +1,5 @@
 from tkinter import *
+import webbrowser
 
 #Creating the class
 class Ticket:
@@ -134,6 +135,7 @@ def create4():
     frame4.grid(row=2,column=1,sticky=N+W+E+S)
 
     Button(frame4, text = "RESET SHOWS", command = reset).grid(row=0,column=0, padx = 100)
+    Button(frame4, text = "OPEN GITHUB", command = openGithub).grid(row=1,column=0,padx=100)
     return frame4
     
 def reset():
@@ -176,6 +178,12 @@ def reset():
     frame6.destroy()
     frame6 = create6()
 
+def openGithub():
+    try:
+        webbrowser.open("https://github.com/standrewscollege2018/circus-cde123456780")
+    except:
+        messagebox.showwarning("Warning", "Unsuccessful attempt")
+        
 #Adding new Tickets
 def create5():
     frame5 = Frame(root, relief = "groove", borderwidth =2, width = 50)
